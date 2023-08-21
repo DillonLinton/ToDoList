@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>To-Do List</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 100px auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    .title {
+      text-align: center;
+      font-size: 24px;
+      color: #0072b1;
+    }
+    .input-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .add-btn {
+      margin-left: 10px;
+      padding: 10px;
+      background-color: #0072b1;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .task-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .task-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      border-radius: 5px;
+      background-color: #f5f5f5;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+    }
+    
+.delete-btn {
+  margin-left: 20px;
+  padding: 8px 15px;
+  background-color: #ff6b6b;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+.delete-btn:hover {
+  background-color: #ff4d4d;
+}
+
+      background-color: #ff6b6b;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Unique To-Do List</div>
+    <div class="input-container">
+      <input type="text" id="new-task" class="input" placeholder="What needs to be done?">
+      <button class="add-btn" onclick="addTask()">Add</button>
+    </div>
+    <ul class="task-list" id="todo-list"></ul>
+  </div>
+  <script src="script.js"></script><script>
+    let tasks = [];
+
+    function loadTasks() {
+      fetch('/tasks')
+        .then(response => response.json())
+        .then(data => {
+          tasks = data;
+          displayTasks();
+        });
+    }
+
+    function displayTasks() {
+      const todoList = document.getElementById('todo-list');
+      todoList.innerHTML = '';
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+        li.className = 'task-item';
+        li.innerHTML = `
+          ${task.text}
+          <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+        `;
+        todoList.appendChild(li);
+      });
+    }
+
+    // function addTask() {
+      const newTask = document.getElementById('new-task');
+      const task = newTask.value.trim();
+      if (task) {
+        fetch('/tasks', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ task })
+        })
+          .then(response => response.json())
+          .then(data => {
+            tasks.push(data);
+            displayTasks();
+            newTask.value = '';
+          });
+      }
+    }
+
+    // function deleteTask(taskId) {
+      // TODO: Implement task deletion on the server and update the UI
+    }
+
+    window.onload = loadTasks;
+  </script>
+</body>
+</html>
